@@ -27,7 +27,6 @@ app.use(express.json())
 
 app.get('/tasks', (req,res) =>{
     res.json(parsedData.tasks)
-    console.log(rawData);
 })
  
  app.post('/tasks',(req,res) =>{
@@ -39,18 +38,40 @@ app.get('/tasks', (req,res) =>{
         createdAt: new Date(),
         updatedAt: new Date(),
     }
-    console.log(rawData);
+    ;
     parsedData.tasks.push(task)
     const stringData = JSON.stringify(parsedData, null, 4);
 	fs.writeFileSync(`${__dirname}/data/data.json`, stringData)
     res.json(parsedData.tasks)
-    
-   
+
  })
 //  app.get('/tasks/:id',(req,res) => {
 //     res.send(`${req.params.id}`)
 //  })
- app.delete('/tasks')
+ app.delete('/tasks/:id' ,(req,res) =>{
+    console.log(req.params);
+    const id = req.params.id
+    console.log(id);
+    const task = parsedData.tasks.splice(id,1)
+    const stringData = JSON.stringify(parsedData, null, 4);
+    fs.writeFileSync(`${__dirname}/data/data.json`, stringData)
+    res.json(task)
+ })
+ 
+ app.patch('/tasks/:id', (req,res) => {
+    console.log(req.body);
+    console.log(req.params.id);
+    const id = req.params.id
+    const body = req.body
+    const task = parsedData.tasks.find((item) => item.uuid === id)
+    console.log(task);
+    task.done =body.done
+    task.name = body.name
+    task.updatedAt = new Date()
+    const stringData = JSON.stringify(parsedData, null, 4);
+    fs.writeFileSync(`${__dirname}/data/data.json`, stringData)
+    res.json(task)
+ })
 // app.get('/', (req,res) =>{
     
 //     res.send('change address  to "user" or "task"')
